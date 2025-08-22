@@ -1,0 +1,12 @@
+.map-container {
+    width: 65vw;
+    min-width: 0;
+    height: 100vh;
+}
+
+@media screen and (max-width: 1024px) {
+    .map-container {
+        width: 100%;
+        overflow: hidden;
+    }
+}
