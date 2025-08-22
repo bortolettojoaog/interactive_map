@@ -1,5 +1,7 @@
-# Building Stagee
+# Define build version
+FROM node:18-alpine3.17 as build
 
+# Building Stagee
 ARG NODE_OPTIONS="--max-old-space-size=4096"
 
 WORKDIR /app
