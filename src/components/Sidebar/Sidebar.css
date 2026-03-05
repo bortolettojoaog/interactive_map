@@ -1,0 +1,105 @@
+.sidebar {
+    width: 35vw;
+    min-width: 280px;
+    max-width: 90vw;
+    background: #04244a;
+    border-left: none;
+    box-shadow: 0 0 16px #0003;
+    padding: 24px 24px 16px 24px;
+    z-index: 10;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 2rem;
+}
+
+.sidebar textarea {
+    width: 100%;
+    height: 40vh;
+    font-family: monospace;
+    resize: vertical;
+    border-radius: 8px;
+    border: 1.5px solid #021a36;
+    background: #063970;
+    color: #fff;
+    padding: 12px;
+    box-sizing: border-box;
+    flex: 1;
+    margin-bottom: 12px;
+    outline: none;
+    transition:
+        box-shadow 0.2s,
+        border-color 0.2s;
+}
+.sidebar textarea:focus {
+    box-shadow: 0 0 0 2px #21e6c1;
+    outline: none;
+}
+
+.sidebar .copy-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.sidebar .sidebar-actions {
+    margin-top: 20px;
+    text-align: right;
+    padding-bottom: 8px;
+}
+
+.sidebar-actions {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.sidebar button {
+    padding: 10px 18px;
+    border-radius: 7px;
+    border: none;
+    background: #021a36;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 4px #0002;
+    transition:
+        background 0.18s,
+        color 0.18s,
+        box-shadow 0.18s;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    opacity: 1;
+}
+
+.sidebar button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #21e6c1;
+}
+
+.sidebar button:hover {
+    background: #063970;
+    color: #fff;
+    box-shadow: 0 2px 8px #21e6c155;
+    opacity: 1;
+}
+
+@media screen and (max-width: 1024px) {
+    .sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 180px;
+        order: 2;
+        overflow: hidden;
+    }
+}
