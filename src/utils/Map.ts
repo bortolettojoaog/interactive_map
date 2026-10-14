@@ -1,7 +1,7 @@
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import { alertSet, usePolygonStore } from '../hooks/store';
+import { alertSet } from '../hooks/store';
 
 type LatLng = { lat: number; lng: number };
 
@@ -27,6 +27,9 @@ export function createArcGISMap({
         map,
         center,
         zoom,
+        constraints: {
+            minZoom: 3,
+        },
     });
     return { map, view };
 }
@@ -111,9 +114,5 @@ export function setupMapEvents({
             );
             drawGeometry(tempPointsRef.current);
         });
-    });
-
-    usePolygonStore.subscribe((state) => {
-        syncTempPointsWithStore(state.points);
     });
 }
