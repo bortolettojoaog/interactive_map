@@ -1,8 +1,11 @@
+import { lazy, Suspense } from 'react';
 import './App.css';
 import FloatingAlert from './components/FloatingAlert/FloatingAlert';
-import CustomMap from './components/Map/CustomMap';
+import './components/Map/CustomMap.css';
 import Sidebar from './components/Sidebar/Sidebar';
 import { useAlertStore } from './hooks/store';
+
+const CustomMap = lazy(() => import('./components/Map/CustomMap'));
 
 function App() {
     const { alerts, hideAlert } = useAlertStore();
@@ -19,7 +22,11 @@ function App() {
                 />
             )}
             <section className="principal">
-                <CustomMap />
+                <Suspense
+                    fallback={<div className="map-container map-loading" />}
+                >
+                    <CustomMap />
+                </Suspense>
                 <Sidebar />
             </section>
         </>

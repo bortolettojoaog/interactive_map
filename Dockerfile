@@ -13,8 +13,6 @@ COPY . .
 
 RUN yarn build
 
-RUN rm -rf /usr/share/nginx/html/*
-
 FROM nginx:alpine
 
 # Mounting configuration files
