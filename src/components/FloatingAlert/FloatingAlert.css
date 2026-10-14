@@ -5,12 +5,14 @@
     z-index: 9999;
     min-width: 260px;
     max-width: 340px;
-    background: #04244a;
-    color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 24px #0005;
+    background: #0f2b52;
+    border: 1px solid #1c3a63;
+    border-left: 3px solid #21e6c1;
+    color: #f3f6fb;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     padding: 0;
-    animation: fadeInAlert 0.3s;
+    animation: fadeInAlert 0.2s ease-out;
 }
 
 @keyframes fadeInAlert {
@@ -53,11 +55,11 @@
     transition: background 0.15s;
 }
 .floating-alert-close:hover {
-    background: #063970;
+    background: #16365f;
 }
 
 .floating-alert-desc {
-    font-size: 0.98rem;
-    color: #e0e6f7;
+    font-size: 0.9rem;
+    color: #b9c6e0;
     margin-top: 2px;
 }

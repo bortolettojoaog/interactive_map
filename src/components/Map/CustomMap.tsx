@@ -1,11 +1,9 @@
-import '@arcgis/core/assets/esri/themes/light/main.css';
+import '@arcgis/core/assets/esri/themes/dark/main.css';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import { MutableRefObject, useEffect, useRef } from 'react';
 import { usePolygonStore } from '../../hooks/store';
 import { createMapMiddleware } from '../../middleware/mapMiddleware';
 import { createArcGISMap, setupMapEvents } from '../../utils/Map';
-
-import './CustomMap.css';
 
 export default function CustomMap() {
     const mapDiv = useRef<HTMLDivElement | null>(null);

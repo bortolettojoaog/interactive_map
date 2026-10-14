@@ -1,10 +1,13 @@
 .version-footer {
+    flex-shrink: 0;
     width: 100%;
     text-align: center;
-    font-size: 0.9em;
-    color: #7a8bb7;
-    margin-top: 1.5em;
-    padding: 0.5em 0;
-    border-top: 1px solid #223366;
-    background: rgba(20, 30, 60, 0.04);
+    font-size: 0.78rem;
+    color: #5c749e;
+    padding: 12px 0;
+    border-top: 1px solid #1c3a63;
+}
+
+.version-footer b {
+    color: #8fa6cc;
 }
