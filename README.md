@@ -2,7 +2,7 @@
 
 > A modern React app for drawing polygons on an ArcGIS map, with real-time coordinate editing and global state management
 
-![Project Banner](./public/banner.png)
+![Project Banner](./public/banner.jpg)
 
 ## 📋 Table of Contents
 
