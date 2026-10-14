@@ -3,6 +3,7 @@
     min-width: 280px;
     max-width: 90vw;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     background: #0a1f3d;
@@ -94,6 +95,94 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #6c84ab;
+}
+
+.edit-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #1e3f6e;
+    background: #132d54;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+}
+
+.edit-toggle:hover {
+    background: #1b3a68;
+    border-color: #2f5a93;
+}
+
+.edit-toggle-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.edit-toggle-active {
+    background: rgba(33, 230, 193, 0.1);
+    border-color: rgba(33, 230, 193, 0.45);
+}
+
+.edit-toggle-icon {
+    flex-shrink: 0;
+    color: #5fd9c4;
+    display: flex;
+}
+
+.edit-toggle-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.edit-toggle .btn-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.edit-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.edit-toggle-switch {
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #0a2141;
+    border: 1px solid #2f5a93;
+    position: relative;
+    transition: background 0.15s;
+}
+
+.edit-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #9fb4d8;
+    transition:
+        transform 0.15s,
+        background 0.15s;
+}
+
+.edit-toggle-active .edit-toggle-switch {
+    background: #21e6c1;
+    border-color: #21e6c1;
+}
+
+.edit-toggle-active .edit-toggle-switch::after {
+    background: #06291f;
+    transform: translateX(16px);
 }
 
 .copy-buttons {

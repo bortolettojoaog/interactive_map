@@ -1,7 +1,7 @@
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import Map from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import { alertSet } from '../hooks/store';
+import { alertSet, usePolygonStore } from '../hooks/store';
 
 type LatLng = { lat: number; lng: number };
 
@@ -57,6 +57,7 @@ export function setupMapEvents({
     }
 
     view.on('pointer-down', (event: any) => {
+        if (usePolygonStore.getState().editMode) return;
         event.preventDefault();
         if (event.button === 2) {
             if (rightClickLocked) {
@@ -102,6 +103,7 @@ export function setupMapEvents({
     });
 
     view.on('click', (event: any) => {
+        if (usePolygonStore.getState().editMode) return;
         if (suppressNextClick) {
             suppressNextClick = false;
             return;

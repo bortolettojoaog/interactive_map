@@ -54,10 +54,28 @@ function IconTrash() {
     );
 }
 
+function IconEdit() {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </svg>
+    );
+}
+
 export default function Sidebar() {
     const points = usePolygonStore((s) => s.points);
     const setPoints = usePolygonStore((s) => s.setPoints);
     const clearAll = usePolygonStore((s) => s.clearAll);
+    const editMode = usePolygonStore((s) => s.editMode);
+    const setEditMode = usePolygonStore((s) => s.setEditMode);
 
     const [textareaValue, setTextareaValue] = useState('');
 
@@ -150,6 +168,36 @@ export default function Sidebar() {
                     onChange={handleTextareaChange}
                     placeholder="Enter one lat,lng per line or draw on map"
                 />
+
+                <label
+                    className={[
+                        'edit-toggle',
+                        editMode && 'edit-toggle-active',
+                        points.length === 0 && 'edit-toggle-disabled',
+                    ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    title="Drag existing points on the map instead of adding new ones"
+                >
+                    <span className="edit-toggle-icon">
+                        <IconEdit />
+                    </span>
+                    <span className="btn-text">
+                        <span className="btn-label">Edit mode</span>
+                        <span className="btn-format">
+                            {editMode
+                                ? 'Drag points to reshape'
+                                : 'Click to add, right-click to remove'}
+                        </span>
+                    </span>
+                    <input
+                        type="checkbox"
+                        checked={editMode}
+                        disabled={points.length === 0}
+                        onChange={(e) => setEditMode(e.target.checked)}
+                    />
+                    <span className="edit-toggle-switch" />
+                </label>
 
                 <div className="field-group">
                     <span className="field-label">Copy coordinates as</span>

@@ -1,5 +1,6 @@
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
+import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 
 type LatLng = { lat: number; lng: number };
 type Coord = [number, number];
@@ -9,6 +10,8 @@ interface MapMiddleware {
     drawGeometry: (coords: Coord[]) => void;
     removePointAtIndex: (idx: number) => void;
     focusFirstPoint: () => void;
+    getCurrentGraphic: () => __esri.Graphic | null;
+    syncGraphicToPoints: (graphic: __esri.Graphic) => void;
 }
 
 export function createMapMiddleware(
@@ -17,8 +20,11 @@ export function createMapMiddleware(
     tempPointsRef: TempPointsRef,
     view: __esri.MapView
 ): MapMiddleware {
+    let currentGraphic: __esri.Graphic | null = null;
+
     function drawGeometry(coords: Coord[]): void {
         graphicsLayer.removeAll();
+        currentGraphic = null;
         if (coords.length === 1) {
             const [lng, lat] = coords[0];
             const pointGraphic = new Graphic({
@@ -31,6 +37,7 @@ export function createMapMiddleware(
                 },
             });
             graphicsLayer.add(pointGraphic);
+            currentGraphic = pointGraphic;
         } else if (coords.length === 2) {
             const lineGraphic = new Graphic({
                 geometry: {
@@ -45,6 +52,7 @@ export function createMapMiddleware(
                 },
             });
             graphicsLayer.add(lineGraphic);
+            currentGraphic = lineGraphic;
         } else if (coords.length > 2) {
             const closedCoords = [...coords];
             if (
@@ -63,6 +71,7 @@ export function createMapMiddleware(
                 },
             });
             graphicsLayer.add(graphic);
+            currentGraphic = graphic;
         }
     }
 
@@ -80,9 +89,49 @@ export function createMapMiddleware(
         }
     }
 
+    function getCurrentGraphic(): __esri.Graphic | null {
+        return currentGraphic;
+    }
+
+    function syncGraphicToPoints(graphic: __esri.Graphic): void {
+        const rawGeometry = graphic.geometry;
+        if (!rawGeometry) return;
+
+        // O SketchViewModel devolve a geometria na projecao da view (Web
+        // Mercator, em metros); o store trabalha em lat/lng.
+        const geometry = rawGeometry.spatialReference?.isWebMercator
+            ? webMercatorToGeographic(rawGeometry)
+            : rawGeometry;
+        if (!geometry) return;
+
+        let coords: Coord[] = [];
+
+        if (geometry.type === 'point') {
+            const point = geometry as __esri.Point;
+            if (point.longitude == null || point.latitude == null) return;
+            coords = [[point.longitude, point.latitude]];
+        } else if (geometry.type === 'polyline') {
+            const polyline = geometry as __esri.Polyline;
+            coords = (polyline.paths[0] || []) as Coord[];
+        } else if (geometry.type === 'polygon') {
+            const polygon = geometry as __esri.Polygon;
+            const ring = (polygon.rings[0] || []) as Coord[];
+            const isClosed =
+                ring.length > 1 &&
+                ring[0][0] === ring[ring.length - 1][0] &&
+                ring[0][1] === ring[ring.length - 1][1];
+            coords = isClosed ? ring.slice(0, -1) : ring;
+        }
+
+        tempPointsRef.current = coords;
+        setPoints(coords.map(([lng, lat]) => ({ lat, lng })));
+    }
+
     return {
         drawGeometry,
         removePointAtIndex,
         focusFirstPoint,
+        getCurrentGraphic,
+        syncGraphicToPoints,
     };
 }

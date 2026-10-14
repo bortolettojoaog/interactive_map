@@ -1,5 +1,6 @@
 import '@arcgis/core/assets/esri/themes/dark/main.css';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { MutableRefObject, useEffect, useRef } from 'react';
 import { usePolygonStore } from '../../hooks/store';
 import { createMapMiddleware } from '../../middleware/mapMiddleware';
@@ -23,12 +24,13 @@ export default function CustomMap() {
             zoom: 14,
         });
 
-        const { drawGeometry } = createMapMiddleware(
-            graphicsLayer,
-            setPoints,
-            tempPointsRef as MutableRefObject<[number, number][]>,
-            view
-        );
+        const { drawGeometry, getCurrentGraphic, syncGraphicToPoints } =
+            createMapMiddleware(
+                graphicsLayer,
+                setPoints,
+                tempPointsRef as MutableRefObject<[number, number][]>,
+                view
+            );
 
         setupMapEvents({
             view,
@@ -39,8 +41,44 @@ export default function CustomMap() {
             drawGeometry,
         });
 
+        const sketchViewModel = new SketchViewModel({
+            view,
+            layer: graphicsLayer,
+        });
+
+        sketchViewModel.on('update', (event) => {
+            const graphic = event.graphics[0];
+            if (graphic) {
+                syncGraphicToPoints(graphic);
+            }
+        });
+
+        let editModeActive = false;
+        const unsubEditMode = usePolygonStore.subscribe((state) => {
+            if (state.editMode === editModeActive) return;
+            editModeActive = state.editMode;
+
+            if (editModeActive) {
+                const graphic = getCurrentGraphic();
+                if (graphic) {
+                    const needsReshape = graphic.geometry?.type !== 'point';
+                    sketchViewModel.update(
+                        graphic,
+                        needsReshape ? { tool: 'reshape' } : undefined
+                    );
+                } else {
+                    usePolygonStore.getState().setEditMode(false);
+                }
+            } else if (sketchViewModel.state === 'active') {
+                sketchViewModel.complete();
+            }
+        });
+
         const unsubClear = usePolygonStore.subscribe((state) => {
             if (state.clearMapFlag) {
+                if (sketchViewModel.state === 'active') {
+                    sketchViewModel.cancel();
+                }
                 graphicsLayer.removeAll();
             }
         });
@@ -50,7 +88,9 @@ export default function CustomMap() {
                 (p) => [p.lng, p.lat] as [number, number]
             );
             tempPointsRef.current = coords;
-            drawGeometry(coords);
+            if (!usePolygonStore.getState().editMode) {
+                drawGeometry(coords);
+            }
         });
 
         const unsubFocus = usePolygonStore.subscribe((state) => {
@@ -71,6 +111,8 @@ export default function CustomMap() {
             unsub();
             unsubClear();
             unsubFocus();
+            unsubEditMode();
+            sketchViewModel.destroy();
             view.destroy();
         };
     }, [setPoints]);

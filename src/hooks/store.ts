@@ -12,6 +12,8 @@ export interface PolygonState {
     focusRequest: LatLng | null;
     focusFirstPoint: () => void;
     resetFocusRequest: () => void;
+    editMode: boolean;
+    setEditMode: (editMode: boolean) => void;
 }
 
 export const usePolygonStore = create<PolygonState>((set, get) => ({
@@ -20,7 +22,8 @@ export const usePolygonStore = create<PolygonState>((set, get) => ({
     addPoint: (point) => set((state) => ({ points: [...state.points, point] })),
     clearPoints: () => set({ points: [] }),
     clearMapFlag: 0,
-    clearAll: () => set({ points: [], clearMapFlag: Date.now() }),
+    clearAll: () =>
+        set({ points: [], clearMapFlag: Date.now(), editMode: false }),
     focusRequest: null,
     focusFirstPoint: () => {
         const pts = get().points;
@@ -29,6 +32,8 @@ export const usePolygonStore = create<PolygonState>((set, get) => ({
         }
     },
     resetFocusRequest: () => set({ focusRequest: null }),
+    editMode: false,
+    setEditMode: (editMode) => set({ editMode }),
 }));
 
 export type AlertType = 'fast-right-click' | 'custom';
@@ -47,9 +52,12 @@ interface AlertState {
     hideAlert: (type: AlertType) => void;
 }
 
+const ALERT_DURATION_MS = 4000;
+const alertTimers = new Map<AlertType, ReturnType<typeof setTimeout>>();
+
 export const useAlertStore = create<AlertState>((set) => ({
     alerts: [],
-    showAlert: (type, title, description) =>
+    showAlert: (type, title, description) => {
         set((state) => {
             const id = type;
             const others = state.alerts.filter((a) => a.id !== id);
@@ -59,13 +67,30 @@ export const useAlertStore = create<AlertState>((set) => ({
                     { id, type, title, description, visible: true },
                 ],
             };
-        }),
-    hideAlert: (type) =>
+        });
+
+        const existingTimer = alertTimers.get(type);
+        if (existingTimer) clearTimeout(existingTimer);
+        alertTimers.set(
+            type,
+            setTimeout(() => {
+                alertTimers.delete(type);
+                useAlertStore.getState().hideAlert(type);
+            }, ALERT_DURATION_MS)
+        );
+    },
+    hideAlert: (type) => {
+        const existingTimer = alertTimers.get(type);
+        if (existingTimer) {
+            clearTimeout(existingTimer);
+            alertTimers.delete(type);
+        }
         set((state) => ({
             alerts: state.alerts.map((a) =>
                 a.type === type ? { ...a, visible: false } : a
             ),
-        })),
+        }));
+    },
 }));
 
 export const alertSet = useAlertStore.setState;
