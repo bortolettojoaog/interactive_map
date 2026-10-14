@@ -10,7 +10,20 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+build
 *.local
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Production compose (server-only, same convention as other BortolettoTech projects — never tracked)
+docker-compose.deploy.yml
+
+# Deploy scripts and artifacts — kept local-only for this project (devops/ci-cd.sh, devops/clean.sh)
+devops/
+*.tar.gz
 
 # Editor directories and files
 .vscode/*
