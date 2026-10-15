@@ -53,6 +53,17 @@ export default function CustomMap() {
             }
         });
 
+        let lastClearFlag = usePolygonStore.getState().clearMapFlag;
+        const unsubClear = usePolygonStore.subscribe((state) => {
+            if (state.clearMapFlag === lastClearFlag) return;
+            lastClearFlag = state.clearMapFlag;
+
+            if (sketchViewModel.state === 'active') {
+                sketchViewModel.cancel();
+            }
+            graphicsLayer.removeAll();
+        });
+
         let editModeActive = false;
         const unsubEditMode = usePolygonStore.subscribe((state) => {
             if (state.editMode === editModeActive) return;
@@ -71,15 +82,6 @@ export default function CustomMap() {
                 }
             } else if (sketchViewModel.state === 'active') {
                 sketchViewModel.complete();
-            }
-        });
-
-        const unsubClear = usePolygonStore.subscribe((state) => {
-            if (state.clearMapFlag) {
-                if (sketchViewModel.state === 'active') {
-                    sketchViewModel.cancel();
-                }
-                graphicsLayer.removeAll();
             }
         });
 
