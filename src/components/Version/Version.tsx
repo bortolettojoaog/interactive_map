@@ -1,9 +1,11 @@
 import './Version.css';
 
 function Version() {
+    const version = import.meta.env.VITE_APP_VERSION || 'dev';
+
     return (
         <div className="version-footer">
-            v1.0.0 powered by <b>BortolettoTech</b>
+            v{version} powered by <b>BortolettoTech</b>
         </div>
     );
 }
